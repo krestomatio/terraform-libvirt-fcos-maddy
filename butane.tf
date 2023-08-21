@@ -42,6 +42,11 @@ storage:
           # selinux context to data dir
           chcon -Rt svirt_sandbox_file_t ${local.data_volume_path}
 
+          # maddy.conf
+          if [ ! -f ${local.data_volume_path}/maddy.conf ]; then
+            curl -sL https://raw.githubusercontent.com/foxcpp/maddy/master/maddy.conf.docker -o ${local.data_volume_path}/maddy.conf
+          fi
+
           # install
           echo "Installing maddy service..."
           podman kill maddy 2>/dev/null || echo
