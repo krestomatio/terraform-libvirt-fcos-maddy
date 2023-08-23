@@ -161,6 +161,18 @@ variable "additional_rpms" {
   }
   nullable = false
 }
+}
+variable "interface_name" {
+  type        = string
+  description = "Network interface name"
+  default     = null
+}
+
+variable "sync_time_with_host" {
+  type        = bool
+  description = "Sync guest time with the kvm host"
+  default     = null
+}
 
 # libvirt node
 variable "fqdn" {
@@ -201,6 +213,12 @@ variable "memory" {
   description = "Node default memory in MiB"
   default     = 512
   nullable    = false
+}
+
+variable "machine" {
+  type        = string
+  description = "The machine type, you normally won't need to set this unless you are running on a platform that defaults to the wrong machine type for your template"
+  default     = null
 }
 
 variable "root_volume_pool" {
