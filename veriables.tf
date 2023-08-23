@@ -161,7 +161,7 @@ variable "additional_rpms" {
   }
   nullable = false
 }
-}
+
 variable "interface_name" {
   type        = string
   description = "Network interface name"
