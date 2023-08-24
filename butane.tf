@@ -52,6 +52,7 @@ storage:
           podman kill maddy 2>/dev/null || echo
           podman rm maddy 2>/dev/null || echo
           podman create --pull never --rm --restart on-failure --stop-timeout ${local.systemd_stop_timeout} \
+            --network host \
             %{~if var.cpus_limit > 0~}
             --cpus ${var.cpus_limit} \
             %{~endif~}
@@ -60,10 +61,6 @@ storage:
             %{~endif~}
             -e MADDY_HOSTNAME=${var.external_fqdn} \
             -e MADDY_DOMAIN=${var.primary_domain} \
-            -p 25:25 \
-            -p 143:143 \
-            -p 587:587 \
-            -p 993:993 \
             --volume /etc/localtime:/etc/localtime:ro \
             --volume "${local.data_volume_path}:/data" \
             --name maddy ${local.maddy_image}
