@@ -46,6 +46,11 @@ storage:
           curl -L https://raw.githubusercontent.com/foxcpp/maddy/master/dist/fail2ban/filter.d/maddy-dictonary-attack.conf -o /etc/fail2ban/filter.d/maddy-dictonary-attack.conf
           curl -L https://raw.githubusercontent.com/foxcpp/maddy/master/dist/fail2ban/jail.d/maddy-auth.conf -o /etc/fail2ban/jail.d/maddy-auth.conf
           curl -L https://raw.githubusercontent.com/foxcpp/maddy/master/dist/fail2ban/jail.d/maddy-dictonary-attack.conf -o /etc/fail2ban/jail.d/maddy-dictonary-attack.conf
+          sed -i 's@^failregex.*@failregex    = ^.+maddy.+: authentication failed.+"src_ip":"<HOST>:\\d{1,5}".*$@' /etc/fail2ban/filter.d/maddy-auth.conf
+          sed -i \
+              -e 's@^failregex.*@failregex    = ^.+maddy.+possible dictonary attack.+"src_ip":"<HOST>:\\d{1,5}".*$@' \
+              -e '/^               smtp/d' \
+              /etc/fail2ban/filter.d/maddy-dictonary-attack.conf
           echo "Fail2ban maddy files added..."
 
           # selinux context to data dir
