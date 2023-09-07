@@ -10,6 +10,7 @@ storage:
       overwrite: false
       append:
         - inline: |
+            fail2ban
             firewalld
     - path: /usr/local/bin/maddy-installer.sh
       mode: 0754
@@ -38,6 +39,14 @@ storage:
           # firewall-cmd --zone=public --add-masquerade
           firewall-cmd --reload
           echo "Firewalld rules added..."
+
+          # fail2ban
+          echo "Adding fail2ban maddy files..."
+          curl -L https://raw.githubusercontent.com/foxcpp/maddy/master/dist/fail2ban/filter.d/maddy-auth.conf -o /etc/fail2ban/filter.d/maddy-auth.conf
+          curl -L https://raw.githubusercontent.com/foxcpp/maddy/master/dist/fail2ban/filter.d/maddy-dictonary-attack.conf -o /etc/fail2ban/filter.d/maddy-dictonary-attack.conf
+          curl -L https://raw.githubusercontent.com/foxcpp/maddy/master/dist/fail2ban/jail.d/maddy-auth.conf -o /etc/fail2ban/jail.d/maddy-auth.conf
+          curl -L https://raw.githubusercontent.com/foxcpp/maddy/master/dist/fail2ban/jail.d/maddy-dictonary-attack.conf -o /etc/fail2ban/jail.d/maddy-dictonary-attack.conf
+          echo "Fail2ban maddy files added..."
 
           # selinux context to data dir
           chcon -Rt svirt_sandbox_file_t ${local.data_volume_path}
@@ -71,7 +80,7 @@ storage:
             --after maddy-image-pull.service \
             --name maddy > /etc/systemd/system/maddy.service
           systemctl daemon-reload
-          systemctl enable maddy.service
+          systemctl enable maddy.service fail2ban.service
           echo "maddy service installed..."
 systemd:
   units:
@@ -109,6 +118,7 @@ systemd:
         After=install-certbot.service
         After=maddy-image-pull.service
         OnSuccess=maddy.service
+        OnSuccess=fail2ban.service
         ConditionPathExists=/usr/local/bin/maddy-installer.sh
         ConditionPathExists=!/var/lib/%N.done
         StartLimitInterval=500
