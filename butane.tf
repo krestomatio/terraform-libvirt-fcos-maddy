@@ -96,6 +96,8 @@ systemd:
         Description="Pull maddy image"
         Wants=network-online.target
         After=network-online.target
+        After=additional-rpms.service
+        Requires=additional-rpms.service
         Before=install-maddy.service
         Before=maddy.service
 
@@ -122,8 +124,8 @@ systemd:
         After=additional-rpms.service
         After=install-certbot.service
         After=maddy-image-pull.service
-        OnSuccess=maddy.service
-        OnSuccess=fail2ban.service
+        Requires=additional-rpms.service
+        Requires=maddy-image-pull.service
         ConditionPathExists=/usr/local/bin/maddy-installer.sh
         ConditionPathExists=!/var/lib/%N.done
         StartLimitInterval=500
@@ -137,6 +139,7 @@ systemd:
         TimeoutStartSec=300
         ExecStart=/usr/local/bin/maddy-installer.sh
         ExecStart=/bin/touch /var/lib/%N.done
+        ExecStart=/usr/bin/systemctl --no-block reboot
 
         [Install]
         WantedBy=multi-user.target
