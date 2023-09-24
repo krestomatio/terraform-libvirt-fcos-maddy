@@ -39,4 +39,6 @@ module "maddy" {
   backup_volume_pool    = var.backup_volume_pool
   ignition_pool         = var.ignition_pool
   network_bridge        = var.network_bridge
+  network_name          = var.network_name
+  network_id            = var.network_id
 }
