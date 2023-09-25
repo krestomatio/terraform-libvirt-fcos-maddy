@@ -85,7 +85,7 @@ storage:
             --after maddy-image-pull.service \
             --name maddy > /etc/systemd/system/maddy.service
           systemctl daemon-reload
-          systemctl enable maddy.service fail2ban.service
+          systemctl enable --now maddy.service fail2ban.service
           echo "maddy service installed..."
 systemd:
   units:
@@ -139,7 +139,6 @@ systemd:
         TimeoutStartSec=300
         ExecStart=/usr/local/bin/maddy-installer.sh
         ExecStart=/bin/touch /var/lib/%N.done
-        ExecStart=/usr/bin/systemctl --no-block reboot
 
         [Install]
         WantedBy=multi-user.target
