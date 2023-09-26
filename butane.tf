@@ -100,12 +100,14 @@ systemd:
         Requires=additional-rpms.service
         Before=install-maddy.service
         Before=maddy.service
+        StartLimitInterval=200
+        StartLimitBurst=3
 
         [Service]
         Type=oneshot
         RemainAfterExit=yes
         Restart=on-failure
-        RestartSec=10
+        RestartSec=5
         TimeoutStartSec=180
         ExecStart=/usr/bin/podman pull ${local.maddy_image}
 
