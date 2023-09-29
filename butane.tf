@@ -51,6 +51,13 @@ storage:
               -e 's@^failregex.*@failregex    = ^.+maddy.+possible dictonary attack.+"src_ip":"<HOST>:\\d{1,5}".*$@' \
               -e '/^               smtp/d' \
               /etc/fail2ban/filter.d/maddy-dictonary-attack.conf
+          cat << _EOF > /etc/fail2ban/jail.local
+          [maddy-auth]
+          enabled = true
+
+          [maddy-dictonary-attack]
+          enabled = true
+          _EOF
           echo "Fail2ban maddy files added..."
 
           # selinux context to data dir
