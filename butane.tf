@@ -18,7 +18,7 @@ storage:
       contents:
         inline: |
           [DEFAULT]
-          ignoreip           = 127.0.0.1/8 ::1 ${var.fail2ban_ignoreip}
+          ignoreip           = ${var.fail2ban_ignoreip}
           bantime.increment  = true
 
           [maddy-auth]

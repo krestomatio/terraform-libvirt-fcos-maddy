@@ -54,7 +54,7 @@ variable "memory_limit" {
 variable "fail2ban_ignoreip" {
   type        = string
   description = "Fail2ban default ignoreip value"
-  default     = ""
+  default     = "127.0.0.1/8 ::1"
   nullable    = false
 }
 
