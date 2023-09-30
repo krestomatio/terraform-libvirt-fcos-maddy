@@ -51,6 +51,13 @@ variable "memory_limit" {
   nullable    = false
 }
 
+variable "fail2ban_ignoreip" {
+  type        = string
+  description = "Fail2ban default ignoreip value"
+  default     = ""
+  nullable    = false
+}
+
 # butane custom
 variable "butane_snippets_additional" {
   type        = list(string)

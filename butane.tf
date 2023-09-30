@@ -12,6 +12,32 @@ storage:
         - inline: |
             fail2ban
             firewalld
+    - path: /etc/fail2ban/jail.local
+      mode: 0644
+      overwrite: true
+      contents:
+        inline: |
+          [DEFAULT]
+          ignoreip           = 127.0.0.1/8 ::1 ${var.fail2ban_ignoreip}
+          bantime.increment  = true
+
+          [maddy-auth]
+          enabled  = true
+          port     = 25,465,587,143,993
+          filter   = maddy-auth
+          bantime  = 96h
+          maxtries = 5
+          findtime = 6h
+          backend  = systemd
+
+          [maddy-dictonary-attack]
+          enabled  = true
+          port     = 25,465,587,143,993
+          filter   = maddy-dictonary-attack
+          bantime  = 72h
+          maxtries = 3
+          findtime = 6h
+          backend  = systemd
     - path: /usr/local/bin/maddy-installer.sh
       mode: 0754
       overwrite: true
@@ -41,24 +67,15 @@ storage:
           echo "Firewalld rules added..."
 
           # fail2ban
-          echo "Adding fail2ban maddy files..."
+          echo "Adding fail2ban maddy filter files..."
           curl -L https://raw.githubusercontent.com/foxcpp/maddy/master/dist/fail2ban/filter.d/maddy-auth.conf -o /etc/fail2ban/filter.d/maddy-auth.conf
           curl -L https://raw.githubusercontent.com/foxcpp/maddy/master/dist/fail2ban/filter.d/maddy-dictonary-attack.conf -o /etc/fail2ban/filter.d/maddy-dictonary-attack.conf
-          curl -L https://raw.githubusercontent.com/foxcpp/maddy/master/dist/fail2ban/jail.d/maddy-auth.conf -o /etc/fail2ban/jail.d/maddy-auth.conf
-          curl -L https://raw.githubusercontent.com/foxcpp/maddy/master/dist/fail2ban/jail.d/maddy-dictonary-attack.conf -o /etc/fail2ban/jail.d/maddy-dictonary-attack.conf
           sed -i 's@^failregex.*@failregex    = ^.+maddy.+: authentication failed.+"src_ip":"<HOST>:\\d{1,5}".*$@' /etc/fail2ban/filter.d/maddy-auth.conf
           sed -i \
               -e 's@^failregex.*@failregex    = ^.+maddy.+possible dictonary attack.+"src_ip":"<HOST>:\\d{1,5}".*$@' \
               -e '/^               smtp/d' \
               /etc/fail2ban/filter.d/maddy-dictonary-attack.conf
-          cat << _EOF > /etc/fail2ban/jail.local
-          [maddy-auth]
-          enabled = true
-
-          [maddy-dictonary-attack]
-          enabled = true
-          _EOF
-          echo "Fail2ban maddy files added..."
+          echo "Fail2ban maddy filter files added..."
 
           # selinux context to data dir
           chcon -Rt svirt_sandbox_file_t ${local.data_volume_path}
